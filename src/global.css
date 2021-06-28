@@ -1,0 +1,30 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+*::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    overflow: hidden;
+}
+
+body > .page {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+body > .page > section {
+    width: 50vw;
+    height: 50vh;
+    border: 1px solid gray;
+}
+
+ol, ul {
+    list-style: none;
+}
