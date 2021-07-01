@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import "./app1.css";
+import Model from "./base/Model";
 
 /*
 * MVC：
@@ -12,22 +13,28 @@ import "./app1.css";
 const eventBus = $(window);
 // console.log(eventBus);
 
-const m = {
+
+
+const m = new Model({
     data: {
         n: parseFloat(localStorage.getItem("n"))
     },
-    update(data) {
+    update(data){
         //将m.data全部赋值给data
         Object.assign(m.data, data);
-
         //eventBus的trigger()触发事件，然后用on()监听这个事件，以实现对象间通信
         eventBus.trigger('m已更新');
         // localStorage.setItem("n", m.data.n || 100);
     }
-};
+});
+//
+// console.dir(m);
+// m.create();
+//
 
-const v = {
-    cntnr: null,
+
+const view = {
+    el: null,
     html: `
         <div>
             <div class="output">
@@ -42,32 +49,10 @@ const v = {
         </div>
     `,
     init(container) {
-        v.cntnr = $(container);
-    }
-    ,
-    render(data) {
-        if (v.cntnr.children) {
-            v.cntnr.empty();
-            // const newEle = $(v.html.replace("{{n}}", m.data.n || 100));
-            // $(v.html.replace("{{n}}", m.data.n)).appendTo(v.cntnr);
-            // v.el = $(v.html.replace("{{n}}", m.data.n)).appendTo(v.cntnr);
-            // v.el.replaceWith(newEle);
-            // v.el = newEle;
-        }
-        $(v.html.replace("{{n}}", data)).appendTo(v.cntnr);
-        localStorage.setItem("n", data || 100);
-    },
-    // 渲染数据到页面
-    // update() {
-    //     c.ui.number.text(m.data.n || 100);
-    // }
-};
-
-const c = {
-    init(container) {
         //初始化html
-        v.init(container);
-        v.render(m.data.n);
+        view.el = $(container);
+        view.el = $(container);
+        view.render(m.data.n);
         // c.ui = {
         //     //寻找关键元素
         //     button1: $("#add1"),
@@ -77,10 +62,22 @@ const c = {
         //     number: $("#number"),
         // };
         //绑定事件
-        c.autoBindEvents();
+        view.autoBindEvents();
         eventBus.on('m已更新', () => {
-            v.render(m.data.n);
+            view.render(m.data.n);
         });
+    },
+    render(data) {
+        if (view.el.children) {
+            view.el.empty();
+            // const newEle = $(v.html.replace("{{n}}", m.data.n || 100));
+            // $(v.html.replace("{{n}}", m.data.n)).appendTo(v.el);
+            // v.el = $(v.html.replace("{{n}}", m.data.n)).appendTo(v.el);
+            // v.el.replaceWith(newEle);
+            // v.el = newEle;
+        }
+        $(view.html.replace("{{n}}", data)).appendTo(view.el);
+        localStorage.setItem("n", data || 100);
     },
     events: {
         'click #add1': 'add',
@@ -100,20 +97,20 @@ const c = {
     divide() {
         m.update({n: m.data.n / 2});
     },
-    autoBindEvents(){
-        for(let key in c.events){
-            const value = c[c.events[key]];
+    autoBindEvents() {
+        for (let key in view.events) {
+            const value = view[view.events[key]];
             const spaceIndex = key.indexOf(' ');
-            const part1 = key.slice(0,spaceIndex);
-            const part2 = key.slice(spaceIndex+1);
+            const part1 = key.slice(0, spaceIndex);
+            const part2 = key.slice(spaceIndex + 1);
             // console.log(part1,part2,value);
-            v.cntnr.on(part1,part2,value);
+            view.el.on(part1, part2, value);
         }
     }
 
 
     // bindEvents() {
-    //     v.cntnr.on('click', "#add1", () => {
+    //     v.el.on('click', "#add1", () => {
     //         m.update({n: m.data.n + 1});
     //         // m.data.n += 1;
     //         // v.render();
@@ -127,19 +124,19 @@ const c = {
     //     //     m.data.n += 1;
     //     //     v.render();
     //     // });
-    //     v.cntnr.on('click', "#minus1", () => {
+    //     v.el.on('click', "#minus1", () => {
     //         m.update({n: m.data.n - 1});
     //         // m.data.n -= 1;
     //         // v.render();
     //         // localStorage.setItem("n", m.data.n);
     //     });
-    //     v.cntnr.on('click', "#mul2", () => {
+    //     v.el.on('click', "#mul2", () => {
     //         m.update({n: m.data.n * 2});
     //         // m.data.n <<= 1;
     //         // v.render();
     //         // localStorage.setItem("n", m.data.n);
     //     });
-    //     v.cntnr.on('click', "#divide2", () => {
+    //     v.el.on('click', "#divide2", () => {
     //         m.update({n: m.data.n / 2});
     //         // m.data.n >>= 1;
     //         // v.render();
@@ -154,7 +151,7 @@ const c = {
 // //寻找关键元素,并绑定事件
 // c.init();
 
-export default c;
+export default view;
 
 
 // const html = `
