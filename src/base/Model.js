@@ -1,16 +1,13 @@
-class Model {
+import EventBus from "./EventBus";
+
+class Model extends EventBus{
     //原型上的方法
     constructor(options) {
         //对象本身的属性
+        super();    //调用父类的constructor避免冲突
         ['data','create','delete','update','get'].forEach((key)=>{
             if(key in options) this[key] = options[key];
         });
-
-        // this.data = options.data;
-        // this.create = options.create;
-        // this.delete = options.delete;
-        // this.update = options.update;
-        // this.get = options.get;
     }
 
     //原型上的方法
